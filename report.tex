@@ -26,16 +26,21 @@
 \def\cc#1{\mathsf{#1}}
 \def\CLS{\ensuremath{\cc{CLS}}\xspace}
 \def\PPAD{\ensuremath{\cc{PPAD}}\xspace}
+\def\P{\ensuremath{\cc{P}}\xspace}
+\def\NP{\ensuremath{\cc{NP}}\xspace}
+\def\TFNP{\ensuremath{\cc{TFNP}}\xspace}
+\def\coNP{\ensuremath{\cc{coNP}}\xspace}
 
 \def\problem#1{\textsc{#1}}
 \def\EOL{\problem{EndOfLine}\xspace}
 \def\EOML{\problem{EndOfMeteredLine}\xspace}
 \def\CC{Colorful Carath\'eodory }
+\def\C{Carath\'eodory}
 \def\org{\bm{0}}
 \def\v{\textbf{v}}
 \def\CCP{\problem{ColorfulCarath\'eodory}\xspace}
 
-\title{IE 598 JG Games, Markets and Mathematical Programming \\ \CCP $in$ \PPAD \\ A simpler proof using LCPs}
+\title{IE 598 JG Games, Markets and Mathematical Programming \\ \CCP $\in$ \PPAD \\ A simpler proof using LCPs}
 
 \author{
 	{\sc Rucha Kulkarni} \\
@@ -51,64 +56,70 @@
 
 \section{Introduction}
 
-Caratheodory's theorem is a classical statement in discrete geometry\cite{CP07}. Generally, it appears in the class of theorems that prove statements of the form: \textit{If subsets of some set have a property $P$, then the entire set also has the property}. Helly's and Radon's theorems are some examples of other statements of this form. Later Barany\cite{IB}, in search of a mathematical game, discovered what he termed a 'colorful' version of the theorem. This version, called the 'Colorful Caratheodory's theorem', then found applications in diverse areas of mathematics and computer science. 
+\par \C's theorem is a classical statement in discrete geometry \cite{CP07}. Generally, it appears in the class of theorems that prove statements of the form: \textit{If subsets of some set have a property $P$, then the entire set also has the property}. Helly's and Radon's theorems are some examples of other statements of this form. Later Barany \cite{IB}, in search of a mathematical game, discovered what he termed a ``colorful'' version of the theorem. This version, called the ``\CC theorem'', then found applications in diverse areas of mathematics and computer science. 
 
-The \CC theorem states that if there are $d+1$ sets $C^i, i \in [d+1]$ of $d+1$ vertices each in $R^d$ such that the origin lies in the convex hull of each of these sets, then there exists a choice of $d+1$ vertices $S$, with exactly one vertex chosen from each set $C^i$ such that the origin lies in the convex hull of this set.
+\par The \CC theorem states that if there are $d+1$ sets $C^i, i \in [d+1]$ of $d+1$ vertices each in $\mathbb{R}^d$ such that the origin lies in the convex hull of each of these sets, then there exists a choice of $d+1$ vertices $S$, with exactly one vertex chosen from each set $C^i$ such that the origin lies in the convex hull of this set.
 
-For visualizing the theorem, one can think all vertices of one input set $C^i$ are assigned one color,
-which we denote by $i$. Then given $d+1$ monochromatic sets with the origin in the convex hull of each, the
-\CC theorem proves the existence of a set of $d+1$ vertices of distinct colors, with the origin in the convex
-hull of this set. We call such a set \textit{panchromatic}.
+\par For visualizing the theorem, one can think all vertices of one input set $C^i$ are assigned one color,
+which we denote by $i$. Then given $d+1$ monochromatic sets with the origin $\org$ in the convex hull of each, the
+\CC theorem proves the existence of a set $S$ of $d+1$ vertices of distinct colors, with $\org$ in the convex
+hull of $S$. We call such a set \textit{panchromatic}.
 
-The original Caratheodory's theorem itself has several applications in various areas. For instance, it has been used in information theory\cite{CP_App1}, to bound the channel capacity or the rate at which information can be reliably transmitted over a communication channel, in control systems theory to get approximate solutions of PDEs\cite{CP_App3} and in mathematics to characterize the spectral set of a compact and convex set of real matrices\cite{CP_App2}. The colorful version, while originally used in discrete geometry, later led to the development of the algorithmic theory of colorful linear programming by Barany et al\cite{CCP_Apps}. This found applications in game theory, operations research and combinatorics, notably the formulation of a Nash equilibrium of a bimatrix game as a colorful linear programming problem. 
+\par The original \C's theorem itself has several applications in various areas. For instance, it has been used in information theory to bound the channel capacity or the rate at which information can be reliably transmitted over a communication channel \cite{CP_App1}, in control systems theory to get approximate solutions of PDEs \cite{CP_App3} and in mathematics to characterize the spectral set of a compact and convex set of real matrices \cite{CP_App2}. The colorful version, while originally used in discrete geometry, later led to the development of the algorithmic theory of colorful linear programming by Barany et al \cite{CCP_Apps}. This found applications in game theory, operations research and combinatorics, notably the formulation of a Nash equilibrium of a bimatrix game as a colorful linear programming problem. %FIXME: Should we put a citation here?
 
-Because of its diverse uses, the natural computational version of the theorem, of finding a panchromatic vertex set, given a suitable input set, attracted interest from the TCS community. Its connections with the Nash equilibrium problem led to conjectures that game theoretic complexity classes might help in resolving the complexity of the problem. This conjecture was proven to hold true, when Meunier et al in \cite{CCP_PPAD} proved the problem belonged in \PPAD. 
+\par Because of its diverse uses, the natural computational version of the theorem of finding a panchromatic vertex set, given a suitable input set, attracted interest from the TCS community. Its connections with the Nash equilibrium problem led to conjectures that game theoretic complexity classes might help in resolving the complexity of the problem. This conjecture was proven to hold true, when Meunier et al proved the problem belonged in \PPAD \cite{CCP_PPAD}. 
 
-We now think Game theory can further help in this classification, by supplying more elegant proof techniques for the classification. Specifically, we propose to find an alternative simpler proof of membership of the \CC Problem (\CCP) in \PPAD. The proof idea is to design a Linear Complementarity Program (LCP) for the problem, and prove that if Lemke's algorithm is implemented on the LCP, the resulting path followed by the algorithm does not diverge on a secondary ray. This Lemke's path, if thus proved finite, will be a valid instance of the characteristic \PPAD-Complete problem \EOL. This describes a reduction from \CCP to \EOL, proving \CCP to be in \PPAD.
+\par We now think game theory can further help in this classification, by supplying more elegant proof techniques for determining the problem's complexity. Specifically, we aim to find an alternative simpler proof of membership of the \CC Problem (\CCP) in \PPAD. The proof idea is to design a Linear Complementarity Program (LCP) for the problem, and prove that if Lemke's algorithm is implemented on the LCP, the resulting path followed by the algorithm does not diverge on a secondary ray. This Lemke's path, if proven to be finite, will be a valid instance of the characteristic \PPAD-Complete problem \EOL. This describes a reduction from \CCP to \EOL, proving \CCP to be in \PPAD.
 
-Our project thus involves a study of the \CC problem, and attempts to formulate LCPs for the program so that the Lemke's algorithm path, when applied on these LCPs, does not diverge on a secondary ray. We describe in detail our attempts to formulate the LCP, and the drawbacks of each attempt. 
+\par Our project thus involves a study of the \CC problem, and attempts to formulate LCPs for the program so that the path taken by Lemke's algorithm, when applied on these LCPs, does not diverge on a secondary ray. We describe in detail our attempts to formulate the LCP, as well as the drawbacks of each attempt. 
 
-\textbf{Presentation:} The next section describes the background and the notation required for the technical description. Section $3$ is the main part of the project where we outline our attempts, ending with a formulation of a correct LCP for the problem. This LCP however leads to a secondary ray, and we give a formal characterization of the same. We end with possible future attempts to improve our work, which could eventually lead to a complete proof for the problem using this technique.   
+\textbf{Presentation:} Section $2$ describes the background and the notation required for the technical description. Section $3$ is the main part of the project where we outline our attempts, culminating in a formulation of a correct LCP for the problem. This LCP however always leads to a secondary ray, and we provide a formal proof of that fact in section $4$. In section $5$ we conclude with possible future attempts to improve our work, which could eventually lead to a complete proof for the problem using this technique.   
 %\section{Related Work}
-
 %FIXME: Vasilis
 
 \section{Preliminaries}
-We first define the Colorful Caratheodory Theorem and the computational problem \CC, the main focus of the project, followed by a short overview of Game Theoretic Complexity classes, ending with a description of linear complementarity programs, and the pivoting technique called Lemke's algorithm for solving them.
+
+\par We first define the \CC theorem and the computational problem \CCP, the main focus of our project, followed by a short overview of game-theoretic complexity classes, ending with a description of Linear Complementarity Programs, and the pivoting technique called Lemke's algorithm for solving them.
 
 \subsection{The \CC Theorem}
-\begin{theorem}[Colorful Caratheodory Theorem]
-  Given $d+1$ sets $C^i, i \in [d+1]$ of $d+1$ vertices each in $R^d$ such that the origin lies in the convex hull of each of these sets, there exists a choice of $d+1$ vertices $S$, with exactly one vertex chosen from each set $C^i$, so that the origin lies in the convex hull of this set. 
+
+\begin{theorem}[\CC Theorem]
+  Given $d+1$ sets $C^i, i \in [d+1]$ of $d+1$ vertices each in $\mathbb{R}^d$ such that the origin lies in the convex hull of each of these sets, there exists a choice of $d+1$ vertices $S$, with exactly one vertex chosen from each set $C^i$, so that the origin lies in the convex hull of this set. 
 \end{theorem}
 
-\begin{definition}[\CC]
-Given as input $d+1$ sets $C^i,\ i \in [d+1]$ of $d+1$ vertices in $\mathbb{R}^d$, such that $\overline{0}\in Conv(C^i)\ \forall i\in[d+1]$, the \CC problem asks to find a panchromatic set $S={v^1,v^2..,v^{d+1}}$ such that $v^i\in C^i \forall i \in [d+1]$, such that $\overline{0}\in Conv(S)$.
+\begin{definition}[\CCP]
+Given as input $d+1$ sets $C^i,\ i \in [d+1]$ of $d+1$ vertices in $\mathbb{R}^d$, such that $\org \in conv(C^i)\ \forall i\in [d+1]$, the \CC problem (\CCP) asks to find a panchromatic set {\normalfont $S = {\v^1, \v^2 \cdots \v^{d+1}}$ } where {\normalfont $\v^i \in C^i \quad \forall i \in [d+1]$ }, such that $\org \in conv(S)$.
 \end{definition}
 
-Because of the theorem, the existence of a solution to the problem is known. We now sketch a pivoting algorithm to find a solution to an instance of the problem: Start with any panchromatic choice of vertices $S_1$ from the $d+1$ sets and check if the origin lies in the convex hull of this set. If it does not, there is at least one color that prevents the origin from doing so. That is, there will exist at least one vertex $v^{i1}$ in $S_1$ such that the origin and this vertex lie on opposite sides of the hyperplane formed by the remaining vertices in $S_1$. Let this vertex belong to the color set $C^i$. Now because a solution to the problem exists, there will be at least one vertex $v^{i2}$ in $C^i$ other than $v^{i1}$, such that the origin and this new vertex from $C^i$ lie on the same side of the aforementioned hyperplane. We now pivot to this vertex, and propose the new colorful choice $S_2=S_1\cup \{v^{i2}\}\backslash \{v^{i1}\}$. It can be proved that the distance of the origin to the nearest hyperplane formed by selecting any $d$ out of the $d+1$ vertices in a colorful set is always lesser than that in the previous choice. As a solution with distance $0$ exists, and there are a finite number of colorful choices, repeatedly pivoting will eventually converge to a solution.
+\par Because of the theorem, the existence of a solution to the problem is always known. We now sketch a pivoting algorithm to find a solution to an instance of the problem: Start with any panchromatic choice of vertices $S_1$ from the $d+1$ sets and check if the origin lies in the convex hull of this set. If it does not, there is at least one color that prevents the origin from doing so. That is, there exists at least one vertex $\v^i_1$ in $S_1$ such that the origin and this vertex lie on opposite sides of the hyperplane formed by the remaining vertices in $S_1$. Let this vertex belong to the color set $C^i$. Now because a solution to the problem exists, there will be at least one vertex $\v^i_2$ in $C^i$ other than $\v^i_1$, such that the origin and this new vertex from $C^i$ lie on the same side of the aforementioned hyperplane. We now pivot to this vertex, and propose the new colorful choice $S_2 = S_1 \cup \{ \v^i_2 \} \setminus \{ \v^i_1 \}$. It can be proved that the distance of the origin to the nearest hyperplane formed by selecting any $d$ out of the $d+1$ vertices in a colorful set is always lesser than that in the previous choice. As a solution with distance $0$ exists, and there are a finite number of colorful choices, repeatedly pivoting will eventually converge to a solution.
 
 \subsection{Complexity Classes of Total Functions}
-The traditional complexity classes of $P$ and $NP$ seem insufficient in capturing the complexity of problems like \CC and Nash equilibrium computation. As the existence of solution to these problems is known, they trivially lie in $NP$, but any of these problems, if proven $NP-hard$, will imply $NP=co-NP$\cite{CP}. Also, the input to these problems can be specified so that the underlying space of solutions is exponentially large, thus simple polynomial time algorithms too seem difficult. This class of problems, where a solution is known to exist, is called $TFNP$(Total Functional NP). 
 
-TFNP, by itself, is a large class, and most likely is semantic. This means there seems to be no formal way to encode the characteristic property that 'a solution exists', and create an automata for this class. This led to Papadimitriou defining several complexity subclasses of TFNP, characterized by the nature of the proof of existence to the problems of that class. 
+\par The traditional complexity classes of \P and \NP seem insufficient in capturing the complexity of problems like \CC and Nash equilibrium computation. As the existence of solution to these problems is known, they trivially lie in \NP, but any of these problems, if proven \NP-hard, will imply \NP $=$ \coNP \cite{CP}. Also, the input to these problems can be specified so that the underlying space of solutions is exponentially large, thus simple polynomial time algorithms too seem difficult. This class of problems, where a solution is known to exist, is called \TFNP (Total Functional \NP). 
 
-One of these classes, relevant to our discussion, is PPAD(Polynomial Parity Argument for Directed Graphs). Defined by Papadimitriou in \cite{CP}, it is the set of all problems in $NP\cap coNP$ that are guaranteed to have a solution, whose proof of existence is the following combinatorial statement:
+\par \TFNP, by itself, is a large class, and most likely is semantic. This means there seems to be no formal way to encode the characteristic property that ``a solution exists'', and create an automata for this class. This led Papadimitriou to define several complexity subclasses of \TFNP, characterized by the nature of the proof of existence to the problems of that class. 
+
+\par One of these classes, relevant to our discussion, is \PPAD (Polynomial Parity Argument for Directed Graphs). Defined by Papadimitriou \cite{CP}, \PPAD is the set of all problems in \NP $\cap$ \coNP that are guaranteed to have a solution, whose proof of existence is the following combinatorial statement
+
 \begin{center}
-\textit{Every directed graph has an even number of odd degree nodes}
+\textit{Every directed graph has an even number of odd degree nodes.}
 \end{center}
-That is, all problems that can be reduced to the problem of finding \textit{another} odd degree node in a graph, belong in PPAD. An equivalent version of PPAD, more commonly used, assumes the in-degree and out-degree of every node in the graph to be at most $1$, with one node of in-degree $0$ specified.  
 
-The following computational problem, which we denote the End-of-Line problem, naturally arises from the definition of PPAD:
-\begin{definition}[End-of-Line Problem]
-Given as input two circuits, termed $P$ and $S$ that take as input an $n$-bit string and output unique $n$-bit strings such that $S(u)=v \Leftrightarrow P(v)=u \forall u,v\in \{0,1\}^n$, and one string $s=0^n$, such that $P(s)=\varnothing$, find a string $w\neq s$ such that $P(w)=\varnothing$ or $S(w)=\varnothing$.  
+\par That is, all problems that can be reduced to the problem of finding \textit{another} odd degree node in a graph, belong in \PPAD. An equivalent version of \PPAD, more commonly used, assumes the in-degree and out-degree of every node in the graph to be at most $1$, with one node of in-degree $0$ specified.  
+
+\par The following computational problem, which we denote the \EOL problem, naturally arises from the definition of \PPAD
+
+\begin{definition}[\EOL Problem]
+Given two circuits termed $P$ and $S$ that take as input an $n$-bit string and output unique $n$-bit strings such that $S(u) = v \Leftrightarrow P(v) = u \quad \forall u,v \in \{ 0, 1 \}^n$, and one string $s = 0^n$, such that $P(s) = \varnothing$, find a string $w \neq s$ such that $P(w) = \varnothing$ or $S(w) = \varnothing$.  
 \end{definition}
 
-Informally, the above definition describes a directed graph where every node has in-degree and out-degree at most $2$, and one source node $\overline{0}$ of in-degree $0$, and asks to find another odd degree node(source or sink). 
+\par Informally, the above definition describes a directed graph where every node has in-degree and out-degree at most $2$, and one source node $\org$ of in-degree $0$, and asks to find another odd degree node (source or sink). 
 
-The \CC problem was recently proven to belong in \PPAD\cite{CCP_PPAD}. We will describe an attempt at a simpler proof using the game theoretic techniques of Liinear Complementarity Programs and Lemke's algorithm. We first start with a brief overview of these concepts.
+\par The \CC problem was recently proven to belong in \PPAD \cite{CCP_PPAD}. We will describe an attempt at a simpler proof using the game theoretic techniques of Linear Complementarity Programs and Lemke's algorithm. We continue with a brief overview of these concepts.
 
 \subsection{Linear Complementarity Problems}
 
+%FIXME: Rucha
 
 \section{An LCP for \CCP}
 
@@ -119,10 +130,10 @@ result requires that the LCP has no secondary rays and Lemke's algorithm can be 
 will see is not the case for our designed LCP.
 
 \par We start off by introducing a set of necessary and sufficient constraints that capture the solutions to
-\CCP. Specifically, given $d+1$ sets of $d+1$ vertices where we denote the $j$th vertex of color $i$ by
-$\v^i_j$, we consider the coefficients of these vertices in a possible convex combination, and denote them
-by $a^i_j$. Consider a set $S$ of vertices that is a solution to \CCP. Then, by the definition of the problem,
-we know that
+\CCP. Specifically, given $d+1$ sets of $d+1$ vertices where, assuming an ordering of the vertices of each
+color, we denote the $j$th vertex of color $i$ by $\v^i_j$, we consider the coefficients of these vertices in
+a possible convex combination, and denote them by $a^i_j$. Consider a set $S$ of vertices that is a solution to
+\CCP. Then, by the definition of the problem, we know that
 
 \begin{itemize}
 \item At a solution, if one coefficient of a color is strictly positive, then all other coefficients of the same
@@ -149,10 +160,82 @@ constraint as well
 \[
 \sum_{i = 1}^{d+1} { \sum_{j = 1}^{d+1} {a^i_j} } = 1
 \]
+\end{itemize}
+
+\par While we are on the right track with the complementarity constraints, this set of conditions are far from being
+a correct LCP for \CCP, mainly for two reasons. First of all, we have two additional equality constraints that are
+not incorporated in the standard LCP $(M, q)$ format. Furthermore we note that if we set one $a^i_j > 0$, by the
+complementarity constraint of $a^i_j$, we get $\sum_{k \neq j} {a^i_k} = 0$, but we also get
+$\sum_{k' \neq k} {a^i_{k'}} > 0$ from the other inequalities of color $i$, which imply
+$a^i_k = 0 \quad \forall k \neq j$. Therefore, simply by changing one variable from zero to non-zero, we make $d + 1$
+inequalities tight in $\mathbb{R}^d$. This fact implies that we have degeneracy in our system of inequalities which,
+if not fixed, will prove to be a problem when we try to apply Lemke's algorithm to our LCP since in a degenerate LCP
+Lemke's algorithm could potentially cycle between vertices and never converge to a solution.
+
+\par Thankfully, it is easy to get around both problems with a simple change, and get an LCP formulation for \CCP.
+To do this, we utilize the two equality constraints and solve them for $a^i_1$. Hence forth, $a^i_1$ will not be
+variables, but expressions whose value rely on the rest of variables $a^i_j \quad 2 \leq j \leq d + 1$. To keep track
+of this fact and avoid any confusion, we introduce in our notation the values ${le}^i \triangleq a^i_1$. If we denote
+by ${(\v^i_j)}^k$ the coordinate of $\v^i_j$ in dimension $k$, then the values of ${le}^i$ are calculated
+by solving the following linear system
+
+\begin{equation}\label{lei}
+\begin{bmatrix}
+{(\v^1_1)}^1 & {(\v^2_1)}^1 & \hdots & {(\v^{d+1}_1)}^1 \\
+{(\v^1_1)}^2 & {(\v^2_1)}^2 & \hdots & {(\v^{d+1}_1)}^2 \\
+\vdots & \vdots & & \vdots \\
+{(\v^1_1)}^d & {(\v^2_1)}^d & \hdots & {(\v^{d+1}_1)}^d \\
+1 & 1 & \hdots & 1
+\end{bmatrix}
+\begin{bmatrix}
+{le}^1 \\ {le}^2 \\ \vdots \\ {le}^d \\ {le}^{d+1}
+\end{bmatrix} =
+\begin{bmatrix}
+- \sum_i {\sum_{j \neq 1} {a^i_j {(\v^i_j)}^1 }} \\
+- \sum_i {\sum_{j \neq 1} {a^i_j {(\v^i_j)}^2 }} \\
+\vdots \\
+- \sum_i {\sum_{j \neq 1} {a^i_j {(\v^i_j)}^d }} \\
+1 - \sum_i {\sum_{j \neq 1} {a^i_j}}
+\end{bmatrix}
+\end{equation}
+
+\par We are now able to write the following LCP for \CCP
+
+\begin{equation}\label{lcp1}
+\begin{array}{lccl}
+\forall i, j \neq 1 & {le}^i + \sum_{k \neq 1, j} {a^i_k} \geq 0 & \bot & a^i_j \geq 0
+\end{array}
+\end{equation}
+
+\par However, we immediately notice a problem in our current formulation that could potentially lead to an
+incorrect solution of \CCP. Since the ${le}^i$ are now calculated by solving a linear system of equations,
+we fail to enforce the necessary condition $a^i_1 \geq 0$, and the ${le}^i$ could potentially be negative.
+To solve this new problem, we incorporate a new set of variables and inequalities, one for each color, to
+bound the ${le}^i$ from $0$. We call these new variables $\gamma^i$. Thus, we tweak \eqref{lcp1} to the
+following LCP
+
+\begin{equation}\label{lcp2}
+\begin{array}{lccl}
+\forall i & {le}^i - \gamma^i \geq 0 & \bot & \gamma^i \geq 0 \\
+\forall i, j \neq 1 & {le}^i + \sum_{k \neq 1, j} {a^i_k} \geq 0 & \bot & a^i_j \geq 0
+\end{array}
+\end{equation}
+
+\par The above LCP succeeds in capturing the set of necessary and sufficient conditions for a solution to \CCP,
+a fact which we formalize with the following theorem
+
+\begin{theorem}[Correctness of LCP \eqref{lcp2}]
+Consider an instance of \CCP with $C^i = ${\normalfont$\{ \v^i_1, \v^i_2, \cdots, \v^i_{d+1} \}$}
+$\quad \forall i \in [d+1]$ as the input vertices and ${le}^i \: \forall i \in [d+1]$ which are calculated by
+the linear system \eqref{lei}. Then, every solution to the Linear Complementarity Program defined in \eqref{lcp2}
+is also a solution to this instance of \CCP.
+\end{theorem}
+
+\begin{proof}
+\end{proof}
 
 %FIXME: Rucha, Proof of correctness for the correct LCP
 
-\end{itemize}
 
 \section{Existence of a Secondary Ray}
 
@@ -160,7 +243,7 @@ constraint as well
 
 \section{Conclusion}
 
-%FIXME: We'll see who
+%FIXME: Vasilis
 
 \bibliographystyle{plain}
 \bibliography{report}
