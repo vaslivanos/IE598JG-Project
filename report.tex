@@ -65,7 +65,7 @@ which we denote by $i$. Then given $d+1$ monochromatic sets with the origin $\or
 \CC theorem proves the existence of a set $S$ of $d+1$ vertices of distinct colors, with $\org$ in the convex
 hull of $S$. We call such a set \textit{panchromatic}.
 
-\par The original \C's theorem itself has several applications in various areas. For instance, it has been used in information theory to bound the channel capacity or the rate at which information can be reliably transmitted over a communication channel \cite{CP_App1}, in control systems theory to get approximate solutions of PDEs \cite{CP_App3} and in mathematics to characterize the spectral set of a compact and convex set of real matrices \cite{CP_App2}. The colorful version, while originally used in discrete geometry, later led to the development of the algorithmic theory of colorful linear programming by Barany et al \cite{CCP_Apps}. This found applications in game theory, operations research and combinatorics, notably the formulation of a Nash equilibrium of a bimatrix game as a colorful linear programming problem. %FIXME: Should we put a citation here?
+\par The original \C's theorem itself has several applications in various areas. For instance, it has been used in information theory to bound the channel capacity or the rate at which information can be reliably transmitted over a communication channel \cite{CP_App1}, in control systems theory to get approximate solutions of PDEs \cite{CP_App3} and in mathematics to characterize the spectral set of a compact and convex set of real matrices \cite{CP_App2}. The colorful version, while originally used in discrete geometry, later led to the development of the algorithmic theory of colorful linear programming by Barany et al \cite{CCP_Apps}. This found applications in game theory, operations research and combinatorics, notably the formulation of a Nash equilibrium of a bimatrix game as a colorful linear programming problem \cite{CCP_Apps}.
 
 \par Because of its diverse uses, the natural computational version of the theorem of finding a panchromatic vertex set, given a suitable input set, attracted interest from the TCS community. Its connections with the Nash equilibrium problem led to conjectures that game theoretic complexity classes might help in resolving the complexity of the problem. This conjecture was proven to hold true, when Meunier et al proved the problem belonged in \PPAD \cite{CCP_PPAD}. 
 
@@ -74,8 +74,6 @@ hull of $S$. We call such a set \textit{panchromatic}.
 \par Our project thus involves a study of the \CC problem, and attempts to formulate LCPs for the program so that the path taken by Lemke's algorithm, when applied on these LCPs, does not diverge on a secondary ray. We describe in detail our attempts to formulate the LCP, as well as the drawbacks of each attempt. 
 
 \textbf{Presentation:} Section $2$ describes the background and the notation required for the technical description. Section $3$ is the main part of the project where we outline our attempts, culminating in a formulation of a correct LCP for the problem. This LCP however always leads to a secondary ray, and we provide a formal proof of that fact in section $4$. In section $5$ we conclude with possible future attempts to improve our work, which could eventually lead to a complete proof for the problem using this technique.   
-%\section{Related Work}
-%FIXME: Vasilis
 
 \section{Preliminaries}
 
@@ -123,7 +121,6 @@ Given two circuits termed $P$ and $S$ that take as input an $n$-bit string and o
 
 \section{An LCP for \CCP}
 
-%FIXME: Vasilis 
 \par The main purpose of this section is to provide an LCP that captures the solutions of \CCP and that is
 correct. The existence of such an LCP already is a strong indication that \CCP $\in$ \PPAD. However, this
 result requires that the LCP has no secondary rays and Lemke's algorithm can be applied to it, which as we
@@ -232,18 +229,136 @@ is also a solution to this instance of \CCP.
 \end{theorem}
 
 \begin{proof}
-\end{proof}
-
 %FIXME: Rucha, Proof of correctness for the correct LCP
+\end{proof}
 
 
 \section{Existence of a Secondary Ray}
 
-%FIXME: Vasilis
+\par In the previous section, we provided a correct LCP formulation of \CCP with \eqref{lcp2}. This fact alone
+is a strong indication that we could potentially prove \CCP $\in$ \PPAD via LCPs. However, to complete our
+proof, we would have to prove that Lemke's algorithm, implemented in LCP \eqref{lcp2} always converges to a solution.
+In other words, we would have to prove that no secondary ray exists in the polyhedron which defines the feasible
+space of our LCP.
+
+\par Unfortunately, this is not the case for our current LCP formulation. We can easily prove that there always
+exists a secondary ray, and Lemke's algorithm implemented \eqref{lcp2} is never guaranteed to converge. To
+demonstrate this fact, we perform a comprehensive analysis of all possible secondary rays of \eqref{lcp2}
+and distinguish the actual secondary ray from the rest. We begin by extending \eqref{lcp2} to the LCP used by
+Lemke's algorithm, with covering vector $\bm{c}$, where $c^i_j \in \mathbb{R}$
+
+\begin{equation}\label{lcp3}
+\begin{array}{lccl}
+\forall i & {le}^i - \gamma^i + c^i_1 z \geq 0 & \bot & \gamma^i \geq 0 \\
+\forall i, j \neq 1 & {le}^i + \sum_{k \neq 1, j} {a^i_k} + c^i_j z \geq 0 & \bot & a^i_j \geq 0
+\end{array}
+\end{equation}
+
+\par We consider a tuple of all variable types of our problem $(a, \gamma, z)$, which will denote the direction of
+a potential ray, and assign a sign to each position in the following way
+
+\begin{itemize}
+\item $+$: If at least one variable of that type is increasing in the current ray.
+\item $0$: If no variable of that type is changing in the current ray.
+\item $-$: Otherwise.
+\end{itemize}
+
+\par We show that all rays are finite, except for one, namely $(0, +, +)$. In the following  cases, we use $*$ in
+place of a sign to denote any possible sign for that set of variables.
+
+\begin{itemize}
+\item $(-, *, *), (*, -, *)$: None of these rays can be a secondary ray, since if at least one $a^i_j$ or one
+$\gamma^i$ keeps decreasing, then at some point we will violate the right complementarity inequalities in
+\eqref{lcp3}.
+
+\item $(+, *, -), (+, *, 0)$: From the linear system of equations that provides the form of the $le^i$, we have that
+
+\[
+le^{d+1} = 1 - \sum_{i=1}^{d+1} {\sum_{j = 2}^{d+1} {a^i_j}} - \sum_{i = 1}^d {le^i}
+\]
+
+\par For any case where at least one $a^i_j$ increases and $z$ does not increase, eventually $le^{d+1} < 0$. This cannot
+happen in a solution, since it violates the first complementarity condition of \eqref{lcp3}.
+
+\item $(+, *, +)$: In this case we have that at least one $a^i_j$ si increasing, therefore the corresponding
+complementarity constraint has to be tight. Therefore, we get
+
+\begin{align*}
+{le}^i + & \sum_{k \neq 1, j} {a^i_k} + c^i_j z = 0 \\
+{le}^i = & - \sum_{k \neq 1, j} {a^i_k} - c^i_j z
+\end{align*}
+
+\par We substitute this equality in the left part of the first complementarity constraint and get
+
+\[
+{le}^i - \gamma^i + c^i_1 z \geq 0 \\
+- \sum_{k \neq 1, j} {a^i_k} - \gamma^i + (c^i_1 - c^i_j) z \geq 0
+\]
+
+\par Now we can set $c^i_1 < c^i_j \quad \forall i \in [d+1]$ and utilize the facts that $a^i_k \geq 0$,
+$\gamma^i \geq 0$ and that $z$ is increasing to see that we immediately violate the above inequality and
+reach a contradiction. Therefore this ray is finite and cannot be a secondary ray.
+
+\item $(0, 0, 0)$: No variable is changing in this case, therefore this case does not represent a ray.
+
+\item $(0, 0, -)$: This is our primary ray and the ray that Lemke's algorithm starts from.
+
+\item $(0, 0, +)$: This is our primary ray again, but we traverse it in the opposite direction this time. This cannot be a
+secondary ray, since Lemke's algorithm cannot cycle back to the primary ray in order to traverse it in the opposite
+direction for a non-degenerate LCP, and we have that \eqref{lcp3} is a non-degenerate LCP.
+
+\item $(0, +, -)$: Since no $a^i_j$ is changing in this case, we have that all $le^i$ will also stay fixed. Therefore,
+if we keep increasing at least one $\gamma^i$ while decreasing $z$, then we either reach a case where $z = 0$ and Lemke's
+algorithm has found a solution, therefore it stops, or at some point we will violate the left side of the first
+complementarity condition of \eqref{lcp3} for that $i$.
+
+\item $(0, +, 0)$: In this case, all variables stay fixed except for at least one or more $\gamma^i$. Thus, no $le^i$ is
+changing, and when $\gamma^i > le^i + c^i_1 z$, we will violate the left side of the first complementarity
+condition of \eqref{lcp3} for that $i$.
+
+\item $(0, +, +)$: In this case, we have that at least one $\gamma^i > 0$. Therefore, the corresponding complementarity
+constraint has to be tight
+
+\[
+{le}^i - \gamma^i + c^i_1 z = 0 \\
+{le}^i = \gamma^i - c^i_1 z
+\]
+
+\par Replacing this equality in the left side of the second complementarity constraint, we get
+
+\[
+\gamma^i + \sum_{k \neq 1, j} {a^i_k} + (c^i_j - c^i_1) z \geq 0
+\]
+
+\par We immediately see that since $c^i_j > c^i_1$, we violate no constraints and we can keep increasing $\gamma^i$ and
+$z$ simultaneously without ever converging to a solution. Thus, unfortunately, this case represents a secondary ray and
+Lemke's algorithm implemented on \eqref{lcp3} is not guaranteed to converge.
+\end{itemize}
 
 \section{Conclusion}
 
-%FIXME: Vasilis
+\par Our project's aim was to analyze the possibility of proving that \CCP lies in \PPAD via the use of a standard
+game-theoretic technique, the Linear Complementarity Program. Our objective was twofold; first provide a correct LCP
+formulation for \CCP which was not known to exist, and second prove that Lemke's algorithm converges on that LCP. In
+the preliminaries we showed why that was enough to prove that \CCP lies in \PPAD.
+
+\par While in the end we failed to achieve both our objectives, we succeded in the first one, which provides both a strong
+indication that our method could potentially work and motivation for us to keep working on this project. There are several
+ways we could proceed from here and tweak our LCP to attain both correctness and convergence of Lemke's algorithm.
+
+\par First of all, observe that we did not utilize at all one specific property of the input, that the origin $\org$
+lies inside the convex hull of every ``monochromatic'' set $C^i$. In other words, that a solution to our problem always
+exists. It is difficult to imagine an LCP formulation on which Lemke's algorithm converges that does not make proper use
+of this property. While we tried to incorporate it in our set of complementary inequalities, we currently do not possess
+a correct way of doing so.
+
+\par Furthermore, there is a vast amount of literature for this problem
+\cite{Quad_solns, results_book, Comp_results, quad_solns_lbound} where many known properties of the theorem are described.
+Another way to approach the LCP formulation is to make use of these properties. As an example of such a property, it is
+known that every input vertex $\v^i_j$ is part of a solution to the problem. Perhaps by utilizing this and other known
+properties, we could arrive more easily at a corerct LCP formulation for \CCP and finally be able to provide a clear,
+concise, simple and well-understood proof that \CCP $\in$ \PPAD.
+
 
 \bibliographystyle{plain}
 \bibliography{report}
