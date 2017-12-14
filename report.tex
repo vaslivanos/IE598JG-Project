@@ -9,17 +9,19 @@
 \usepackage{shadow}
 \usepackage{amssymb}
 \usepackage{amsmath}
+\usepackage{amsthm}
 \usepackage{algorithm}
 \usepackage{mathtools}
 \usepackage{graphicx}
 \usepackage{color}
 \usepackage{bm}
 \usepackage{fancyhdr}
+\include{preamble}
 
-\addtolength{\textwidth}{4cm}
-\addtolength{\textheight}{4cm}
-\addtolength{\oddsidemargin}{-2cm}
-\addtolength{\topmargin}{-2.5cm}
+%\addtolength{\textwidth}{4cm}
+%\addtolength{\textheight}{4cm}
+%\addtolength{\oddsidemargin}{-2cm}
+%\addtolength{\topmargin}{-2.5cm}
 
 \def\cc#1{\mathsf{#1}}
 \def\CLS{\ensuremath{\cc{CLS}}\xspace}
@@ -49,38 +51,64 @@
 
 \section{Introduction}
 
-%FIXME: Rucha. This is simply the proposal copy-pasted and needs lots of work.
+Caratheodory's theorem is a classical statement in discrete geometry\cite{CP07}. Generally, it appears in the class of theorems that prove statements of the form: \textit{If subsets of some set have a property $P$, then the entire set also has the property}. Helly's and Radon's theorems are some examples of other statements of this form. Later Barany\cite{IB}, in search of a mathematical game, discovered what he termed a 'colorful' version of the theorem. This version, called the 'Colorful Caratheodory's theorem', then found applications in diverse areas of mathematics and computer science. 
 
-\par The \CC theorem is a classical result in graph theory. The theorem states that given $d+1$ sets
-$C^i, i \in [d+1]$ of $d+1$ vertices each in $R^d$, so that the origin lies in the convex hull of each of
-these sets, there exists a set of $d+1$ vertices $S$, such that exactly one vertex from each set $C^i$
-belongs to $S$, and the origin lies in the convex hull of this set.
+The \CC theorem states that if there are $d+1$ sets $C^i, i \in [d+1]$ of $d+1$ vertices each in $R^d$ such that the origin lies in the convex hull of each of these sets, then there exists a choice of $d+1$ vertices $S$, with exactly one vertex chosen from each set $C^i$ such that the origin lies in the convex hull of this set.
 
-\par For visualizing the theorem, one can think all vertices of one input set $C^i$ are assigned one color,
+For visualizing the theorem, one can think all vertices of one input set $C^i$ are assigned one color,
 which we denote by $i$. Then given $d+1$ monochromatic sets with the origin in the convex hull of each, the
 \CC theorem proves the existence of a set of $d+1$ vertices of distinct colors, with the origin in the convex
 hull of this set. We call such a set \textit{panchromatic}.
 
-\par The natural computational problem of finding a panchromatic vertex set has been proven to lie in \PPAD
-\cite{CCP_PPAD}. We propose to find an alternative simpler proof of membership of the \CC Problem (\CCP) in
-\PPAD. The proof idea is to design a Linear Complementarity Program (LCP) for the problem, and prove that if
-Lemke's algorithm is implemented on the LCP, the resulting path followed by the algorithm converges. This path,
-if finite, is an instance of the characteristic \PPAD-Complete problem \EOL. Thus its a valid reduction from
-\CCP to \EOL, proving \CCP to be in \PPAD.
+The original Caratheodory's theorem itself has several applications in various areas. For instance, it has been used in information theory\cite{CP_App1}, to bound the channel capacity or the rate at which information can be reliably transmitted over a communication channel, in control systems theory to get approximate solutions of PDEs\cite{CP_App3} and in mathematics to characterize the spectral set of a compact and convex set of real matrices\cite{CP_App2}. The colorful version, while originally used in discrete geometry, later led to the development of the algorithmic theory of colorful linear programming by Barany et al\cite{CCP_Apps}. This found applications in game theory, operations research and combinatorics, notably the formulation of a Nash equilibrium of a bimatrix game as a colorful linear programming problem. 
 
-\section{Related Work}
+Because of its diverse uses, the natural computational version of the theorem, of finding a panchromatic vertex set, given a suitable input set, attracted interest from the TCS community. Its connections with the Nash equilibrium problem led to conjectures that game theoretic complexity classes might help in resolving the complexity of the problem. This conjecture was proven to hold true, when Meunier et al in \cite{CCP_PPAD} proved the problem belonged in \PPAD. 
+
+We now think Game theory can further help in this classification, by supplying more elegant proof techniques for the classification. Specifically, we propose to find an alternative simpler proof of membership of the \CC Problem (\CCP) in \PPAD. The proof idea is to design a Linear Complementarity Program (LCP) for the problem, and prove that if Lemke's algorithm is implemented on the LCP, the resulting path followed by the algorithm does not diverge on a secondary ray. This Lemke's path, if thus proved finite, will be a valid instance of the characteristic \PPAD-Complete problem \EOL. This describes a reduction from \CCP to \EOL, proving \CCP to be in \PPAD.
+
+Our project thus involves a study of the \CC problem, and attempts to formulate LCPs for the program so that the Lemke's algorithm path, when applied on these LCPs, does not diverge on a secondary ray. We describe in detail our attempts to formulate the LCP, and the drawbacks of each attempt. 
+
+\textbf{Presentation:} The next section describes the background and the notation required for the technical description. Section $3$ is the main part of the project where we outline our attempts, ending with a formulation of a correct LCP for the problem. This LCP however leads to a secondary ray, and we give a formal characterization of the same. We end with possible future attempts to improve our work, which could eventually lead to a complete proof for the problem using this technique.   
+%\section{Related Work}
 
 %FIXME: Vasilis
 
 \section{Preliminaries}
-
-%FIXME: Rucha
+We first define the Colorful Caratheodory Theorem and the computational problem \CC, the main focus of the project, followed by a short overview of Game Theoretic Complexity classes, ending with a description of linear complementarity programs, and the pivoting technique called Lemke's algorithm for solving them.
 
 \subsection{The \CC Theorem}
+\begin{theorem}[Colorful Caratheodory Theorem]
+  Given $d+1$ sets $C^i, i \in [d+1]$ of $d+1$ vertices each in $R^d$ such that the origin lies in the convex hull of each of these sets, there exists a choice of $d+1$ vertices $S$, with exactly one vertex chosen from each set $C^i$, so that the origin lies in the convex hull of this set. 
+\end{theorem}
+
+\begin{definition}[\CC]
+Given as input $d+1$ sets $C^i,\ i \in [d+1]$ of $d+1$ vertices in $\mathbb{R}^d$, such that $\overline{0}\in Conv(C^i)\ \forall i\in[d+1]$, the \CC problem asks to find a panchromatic set $S={v^1,v^2..,v^{d+1}}$ such that $v^i\in C^i \forall i \in [d+1]$, such that $\overline{0}\in Conv(S)$.
+\end{definition}
+
+Because of the theorem, the existence of a solution to the problem is known. We now sketch a pivoting algorithm to find a solution to an instance of the problem: Start with any panchromatic choice of vertices $S_1$ from the $d+1$ sets and check if the origin lies in the convex hull of this set. If it does not, there is at least one color that prevents the origin from doing so. That is, there will exist at least one vertex $v^{i1}$ in $S_1$ such that the origin and this vertex lie on opposite sides of the hyperplane formed by the remaining vertices in $S_1$. Let this vertex belong to the color set $C^i$. Now because a solution to the problem exists, there will be at least one vertex $v^{i2}$ in $C^i$ other than $v^{i1}$, such that the origin and this new vertex from $C^i$ lie on the same side of the aforementioned hyperplane. We now pivot to this vertex, and propose the new colorful choice $S_2=S_1\cup \{v^{i2}\}\backslash \{v^{i1}\}$. It can be proved that the distance of the origin to the nearest hyperplane formed by selecting any $d$ out of the $d+1$ vertices in a colorful set is always lesser than that in the previous choice. As a solution with distance $0$ exists, and there are a finite number of colorful choices, repeatedly pivoting will eventually converge to a solution.
 
 \subsection{Complexity Classes of Total Functions}
+The traditional complexity classes of $P$ and $NP$ seem insufficient in capturing the complexity of problems like \CC and Nash equilibrium computation. As the existence of solution to these problems is known, they trivially lie in $NP$, but any of these problems, if proven $NP-hard$, will imply $NP=co-NP$\cite{CP}. Also, the input to these problems can be specified so that the underlying space of solutions is exponentially large, thus simple polynomial time algorithms too seem difficult. This class of problems, where a solution is known to exist, is called $TFNP$(Total Functional NP). 
+
+TFNP, by itself, is a large class, and most likely is semantic. This means there seems to be no formal way to encode the characteristic property that 'a solution exists', and create an automata for this class. This led to Papadimitriou defining several complexity subclasses of TFNP, characterized by the nature of the proof of existence to the problems of that class. 
+
+One of these classes, relevant to our discussion, is PPAD(Polynomial Parity Argument for Directed Graphs). Defined by Papadimitriou in \cite{CP}, it is the set of all problems in $NP\cap coNP$ that are guaranteed to have a solution, whose proof of existence is the following combinatorial statement:
+\begin{center}
+\textit{Every directed graph has an even number of odd degree nodes}
+\end{center}
+That is, all problems that can be reduced to the problem of finding \textit{another} odd degree node in a graph, belong in PPAD. An equivalent version of PPAD, more commonly used, assumes the in-degree and out-degree of every node in the graph to be at most $1$, with one node of in-degree $0$ specified.  
+
+The following computational problem, which we denote the End-of-Line problem, naturally arises from the definition of PPAD:
+\begin{definition}[End-of-Line Problem]
+Given as input two circuits, termed $P$ and $S$ that take as input an $n$-bit string and output unique $n$-bit strings such that $S(u)=v \Leftrightarrow P(v)=u \forall u,v\in \{0,1\}^n$, and one string $s=0^n$, such that $P(s)=\varnothing$, find a string $w\neq s$ such that $P(w)=\varnothing$ or $S(w)=\varnothing$.  
+\end{definition}
+
+Informally, the above definition describes a directed graph where every node has in-degree and out-degree at most $2$, and one source node $\overline{0}$ of in-degree $0$, and asks to find another odd degree node(source or sink). 
+
+The \CC problem was recently proven to belong in \PPAD\cite{CCP_PPAD}. We will describe an attempt at a simpler proof using the game theoretic techniques of Liinear Complementarity Programs and Lemke's algorithm. We first start with a brief overview of these concepts.
 
 \subsection{Linear Complementarity Problems}
+
 
 \section{An LCP for \CCP}
 
