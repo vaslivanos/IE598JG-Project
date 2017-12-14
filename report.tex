@@ -1,0 +1,140 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{xspace}
+\usepackage{latexsym}
+\usepackage{epsfig}
+\usepackage{verbatim}
+\usepackage{shadow}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{algorithm}
+\usepackage{mathtools}
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage{bm}
+\usepackage{fancyhdr}
+
+\addtolength{\textwidth}{4cm}
+\addtolength{\textheight}{4cm}
+\addtolength{\oddsidemargin}{-2cm}
+\addtolength{\topmargin}{-2.5cm}
+
+\def\cc#1{\mathsf{#1}}
+\def\CLS{\ensuremath{\cc{CLS}}\xspace}
+\def\PPAD{\ensuremath{\cc{PPAD}}\xspace}
+
+\def\problem#1{\textsc{#1}}
+\def\EOL{\problem{EndOfLine}\xspace}
+\def\EOML{\problem{EndOfMeteredLine}\xspace}
+\def\CC{Colorful Carath\'eodory }
+\def\org{\bm{0}}
+\def\v{\textbf{v}}
+\def\CCP{\problem{ColorfulCarath\'eodory}\xspace}
+
+\title{IE 598 JG Games, Markets and Mathematical Programming \\ \CCP $in$ \PPAD \\ A simpler proof using LCPs}
+
+\author{
+	{\sc Rucha Kulkarni} \\
+	\texttt{ruchark2@illinois.edu}
+	\and
+	{\sc Vasilis Livanos} \\
+	\texttt{livanos3@illinois.edu}
+}
+
+\date{}
+
+\begin{document} \maketitle
+
+\section{Introduction}
+
+%FIXME: Rucha. This is simply the proposal copy-pasted and needs lots of work.
+
+\par The \CC theorem is a classical result in graph theory. The theorem states that given $d+1$ sets
+$C^i, i \in [d+1]$ of $d+1$ vertices each in $R^d$, so that the origin lies in the convex hull of each of
+these sets, there exists a set of $d+1$ vertices $S$, such that exactly one vertex from each set $C^i$
+belongs to $S$, and the origin lies in the convex hull of this set.
+
+\par For visualizing the theorem, one can think all vertices of one input set $C^i$ are assigned one color,
+which we denote by $i$. Then given $d+1$ monochromatic sets with the origin in the convex hull of each, the
+\CC theorem proves the existence of a set of $d+1$ vertices of distinct colors, with the origin in the convex
+hull of this set. We call such a set \textit{panchromatic}.
+
+\par The natural computational problem of finding a panchromatic vertex set has been proven to lie in \PPAD
+\cite{CCP_PPAD}. We propose to find an alternative simpler proof of membership of the \CC Problem (\CCP) in
+\PPAD. The proof idea is to design a Linear Complementarity Program (LCP) for the problem, and prove that if
+Lemke's algorithm is implemented on the LCP, the resulting path followed by the algorithm converges. This path,
+if finite, is an instance of the characteristic \PPAD-Complete problem \EOL. Thus its a valid reduction from
+\CCP to \EOL, proving \CCP to be in \PPAD.
+
+\section{Related Work}
+
+%FIXME: Vasilis
+
+\section{Preliminaries}
+
+%FIXME: Rucha
+
+\subsection{The \CC Theorem}
+
+\subsection{Complexity Classes of Total Functions}
+
+\subsection{Linear Complementarity Problems}
+
+\section{An LCP for \CCP}
+
+%FIXME: Vasilis 
+\par The main purpose of this section is to provide an LCP that captures the solutions of \CCP and that is
+correct. The existence of such an LCP already is a strong indication that \CCP $\in$ \PPAD. However, this
+result requires that the LCP has no secondary rays and Lemke's algorithm can be applied to it, which as we
+will see is not the case for our designed LCP.
+
+\par We start off by introducing a set of necessary and sufficient constraints that capture the solutions to
+\CCP. Specifically, given $d+1$ sets of $d+1$ vertices where we denote the $j$th vertex of color $i$ by
+$\v^i_j$, we consider the coefficients of these vertices in a possible convex combination, and denote them
+by $a^i_j$. Consider a set $S$ of vertices that is a solution to \CCP. Then, by the definition of the problem,
+we know that
+
+\begin{itemize}
+\item At a solution, if one coefficient of a color is strictly positive, then all other coefficients of the same
+color are equal to zero. We capture this property by introducing the following complementarity constraint
+
+\[
+\forall i, j \qquad a^i_j \geq 0 \qquad \bot \qquad \sum_{k \neq j} {a^i_k} \geq 0
+\]
+
+This property assures that at most one coefficient is strictly positive in a solution. Note that we do not force
+exactly one coefficient to be positive because of the possibility of $\org$ lying in the boundary of $conv(S)$
+which is a subspace of dimension lesser than $d$.
+
+\item At a solution, $\org \in conv(S)$. However, we do not know \textit{a priori} which $a^i_j$ are going to be
+non-zero. Therefore, we capture this property by imposing the following equality constraint
+
+\[
+\sum_{i = 1}^{d+1} { \sum_{j = 1}^{d+1} {a^i_j \v^i_j } } = \org
+\]
+
+\item The $a^i_j$ define a convex combination of $\v^i_j$, therefore we have to impose the following equality
+constraint as well
+
+\[
+\sum_{i = 1}^{d+1} { \sum_{j = 1}^{d+1} {a^i_j} } = 1
+\]
+
+%FIXME: Rucha, Proof of correctness for the correct LCP
+
+\end{itemize}
+
+\section{Existence of a Secondary Ray}
+
+%FIXME: Vasilis
+
+\section{Conclusion}
+
+%FIXME: We'll see who
+
+\bibliographystyle{plain}
+\bibliography{report}
+
+\end{document}
